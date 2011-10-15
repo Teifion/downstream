@@ -1,0 +1,14 @@
+Downstream will be a multiplayer game centred around hacking. I'm writing it
+to teach myself network programming. Actual design of the game to come at a
+later stage.
+
+I will be reusing some code from the Sequtus (https://github.com/Teifion/sequtus)
+project and will hopefully be able to add some improvements to it though the
+engine itself will not be for an RTS.
+
+Dependancies:
+    Python 2.7
+    PyGame
+
+Run as:
+    python main.py
