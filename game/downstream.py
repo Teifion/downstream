@@ -22,7 +22,7 @@ class Downstream (core.EngineV3):
         self.screens['Game'] = game.Game
         
         self.set_screen('Main menu')
-        # self.new_game()
+        self.new_game()
 
     def new_game(self, file_path=""):
         self.set_screen('Game')
