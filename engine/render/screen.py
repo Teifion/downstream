@@ -1,20 +1,32 @@
+from __future__ import division
+
 import time
 
 import pygame
 from pygame.locals import *
 
+from engine.libs import screen_lib
+
 class Screen (object):
     # When set to true the screen has to regulate the FPS itself
     self_regulate = False
     
-    def __init__(self, dimensions):
+    fullscreen = False
+    
+    facings = 360/4# The number of different angles we'll draw
+    
+    def __init__(self, engine, dimensions):
         super(Screen, self).__init__()
         
-        self.actors = []
-        self.name = ""
-        self.engine = None
-        
+        self.actors = {}
+        self.controls = {}
         self.buttons = []
+        
+        self.name = ""
+        self.engine = engine
+        self.size = dimensions
+        
+        self.image_cache = {}
         
         self.mouse_is_down = False
         self.keys_down = {}
@@ -24,8 +36,14 @@ class Screen (object):
         
         self.engine = None
         self.background_image = None
+        self.background = (200, 200, 200)# Default to a grey background
         
-        self.surf = pygame.Surface(dimensions)
+        if self.fullscreen:
+            # TODO work out if it's okay to use the HWSURFACE flag
+            # or if I need to stick wih FULLSCREEN
+            self.surf = pygame.display.set_mode(dimensions, FULLSCREEN)
+        else:
+            self.surf = pygame.Surface(dimensions)
         
         self._last_mouseup = [None, -1]
         self._double_click_interval = 0.25
@@ -37,24 +55,64 @@ class Screen (object):
         """
         This is called every execution loop to allow the game to do 'stuff'
         """
-        raise Exception("{0}.game_logic() is not implemented".format(self.__class__))
+        raise Exception("{0}.update() is not implemented".format(self.__class__))
     
-    # Drawing
+    def get_rotated_image(self, core_image_name, frame, rotation):
+        rounded_facing = screen_lib.get_facing_angle(
+            rotation, self.facings
+        )
+        
+        # Build name
+        img_name = "%s_%s_%s" % (
+            core_image_name,
+            self.engine.images[core_image_name].real_frame(frame),
+            rounded_facing,
+        )
+        
+        # Cache miss?
+        if img_name not in self.image_cache:
+            self.image_cache[img_name] = screen_lib.make_rotated_image(
+                image = self.engine.images[core_image_name].get(frame),
+                angle = rounded_facing,
+            )
+        
+        return self.image_cache[img_name]
+    
     def redraw(self):
-        """Called every main loop cycle"""
+        """Basic screens do not have scrolling capabilities
+        you'd need to use a subclass for that"""
+        surf = self.engine.display
+        
+        # CODE NOT YET TESTED
         # Actors
-        for a in self.actors:
-            # Only draw actors within the screen
-            if a.rect.left > -a.rect.width and a.rect.right < self.engine.window_width + a.rect.width:
-                if a.rect.top > -a.rect.height and a.rect.bottom < self.engine.window_height + a.rect.height:
-                    surf.blit(a.image, a.rect)
+        for i, a in self.actors.items():
+            a.frame += 1
+            
+            if 0 < a.position[0] < self.size[0]:
+                if 0 < a.position[1] < self.size[1]:
+                    actor_img = self.get_rotated_image(a.image, a.frame, rounded_facing)
+                    
+                    r = pygame.Rect(actor_img.get_rect())
+                    r.left = a.pos[0] + self.draw_margin[0] - r.width/2
+                    r.top = a.pos[1] + self.draw_margin[1] - r.height/2
+                    
+                    surf.blit(actor_img, r)
+        
+        # Panels, unlike actors we draw all of them unless they
+        # tell us not to
+        for i, c in self.controls.items():
+            if c.visible:
+                surf.blit(*c.image())
         
         pygame.display.flip()
     
     def update_window(self):
         """Used when we've changed screen or want to simply redraw everything"""
-        self.background = self.background_image.copy()
-        self.display.blit(self.background, pygame.Rect(0, 0, self.engine.window_width, self.engine.window_height))
+        if type(self.background) == tuple or type(self.background) == list:
+            self.display.fill(self.background)
+        else:
+            self.background = self.background_image.copy()
+            self.display.blit(self.background, pygame.Rect(0, 0, self.size[0], self.size[1]))
         
         pygame.display.flip()
         self.redraw()
@@ -197,3 +255,44 @@ class Screen (object):
             if self.keys_down[310] <= self.keys_down[113]:# Cmd has to be pushed first
                 self.quit()
     
+class FullScreen (Screen):
+    fullscreen = True
+    
+    def __init__(self, engine, preferred_size=None):
+        dimensions = self.get_max_size(preferred_size)
+        
+        super(FullScreen, self).__init__(engine, dimensions = dimensions)
+    
+    def get_max_size(self, preferred_size=None):
+        """Takes the preferred size and gets the closest it can (rounding
+        down to a smaller screen). It will always try to get the same ratio,
+        if it cannot find the same ratio it will error."""
+        
+        # Default to max size!
+        if preferred_size == None:
+            return pygame.display.list_modes()[0]
+        
+        x, y = preferred_size
+        ratio = x/y
+        
+        found_size = (0,0)
+        for sx, sy in pygame.display.list_modes():
+            sratio = sx/sy
+            
+            if sratio != ratio:
+                continue
+            
+            # Make sure it's small enough
+            if sx <= x and sy <= y:
+                if sx > found_size[0] and sy > found_size[1]:
+                    found_size = sx, sy
+        
+        if found_size != (0,0):
+            return found_size
+        return None
+            
+    
+
+
+
+

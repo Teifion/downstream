@@ -16,13 +16,40 @@ def draw_text(surface, text, position, colour=(0,0,0),
     textrect.topleft = position
     surface.blit(textobj, textrect)
 
-class TextDisplay (pygame.sprite.Sprite):
+class Control (object):
+    # When set to True the screen will assume that .draw()
+    # returns an image for it to blit, if not then it will
+    # pass a copy of the surface to the control for
+    # it to draw itself as need be
+    draws_image = False
+    
+    def __init__(self, position, size):
+        super(Control, self).__init__()
+        
+        self.rect = pygame.Rect(0,0,0,0)
+        self.rect.topleft = position
+        self.rect.size = size
+        
+        self.visible = True
+        
+        self.update()
+    
+    def update(self):
+        pass
+    
+    # Some control types will need to be told when to redraw themselves
+    def redraw(self, *args, **kwargs):
+        raise Exception("redraw() is not accepted by this control type")
+    
+    def draw(self, surf, offset=(0,0)):
+        pass
+        
+
+class TextDisplay (Control):
     def __init__(self, position, text, font_name="Helvetica", font_size=20, colour=(255,0,0)):
-        pygame.sprite.Sprite.__init__(self)
+        super(Control, self).__init__(position, size=(0,0))
         
         self.font = pygame.font.SysFont(font_name, font_size)
-        
-        self.position = position
         
         self.colour = colour
         self.text = text
@@ -35,10 +62,8 @@ class TextDisplay (pygame.sprite.Sprite):
             self.fill_colour = (0,0,0,0)
         else:
             self.fill_colour = (255,255,255,255)
-        
-        self.update()
     
-    def update(self, *args, **kwargs):
+    def update(self):
         if self._last_text != self.text:
             self._last_text = self.text
             
@@ -61,14 +86,17 @@ class TextDisplay (pygame.sprite.Sprite):
             textrect = textobj.get_rect()
             textrect.topleft = (0, 0)
             # self.image.blit(textobj, textrect)
+    
+    def draw(self, surf, offset):
+        pass
 
-class Button (pygame.sprite.Sprite):
+class Button (Control):
     def __init__(self, position, image):
-        pygame.sprite.Sprite.__init__(self)
-        
         self.image = image.copy()
         self.rect = self.image.get_rect()
         self.rect.topleft = position
+        
+        super(Control, self).__init__(position, self.rect.size)
         
         self.has_updated = False
         self.button_down = None
@@ -87,7 +115,10 @@ class Button (pygame.sprite.Sprite):
         
         return False
     
-    def update(self, *args, **kwargs):
+    def update(self):
+        pass
+    
+    def draw(self, surf, offset):
         pass
 
 class InvisibleButton (object):
@@ -116,4 +147,47 @@ class InvisibleButton (object):
         
         return False
 
+# A panel is used mostly for display but often has much more complicated
+# behaviour than the rest of the controls (menus etc)
+class Panel (Control):
+    always_redraw = False
+    accepts_keydown = False
+    
+    def __init__(self, position, size):
+        super(Panel, self).__init__(position, size)
+        
+        # When set to true the menu will scroll with the screen
+        # much like an actor will
+        self.scrolls = False
+        
+        # Used for caching images as panels don't change that often
+        self.changed = False
+        self.always_changed = False
+        self._image = None
+    
+    def contains(self, point):
+        if self.position.left <= point[0] <= self.position.right:
+            if self.position.top <= point[1] <= self.position.bottom:
+                return True
+    
+    def image(self):
+        # Try to use the cached version
+        if self._image != None and not self.changed and not self.always_redraw and not self.always_changed:
+            return self._image, self.position
+        
+        # Draw the iamge
+        self.draw()
+        
+        return self._image, self.rect
+    
+    def draw(self):
+        raise Exception("{0}.draw() is not implemented".format(self.__class__))
+    
+    def handle_mousedrag(self, event):
+        pass
+    
+    def handle_mouseup(self, event, drag=False):
+        raise Exception("{0}.handle_mouseup() is not implemented".format(self.__class__))
 
+    def handle_doubleclick(self, first_click, second_click):
+        return self.handle_mouseup(second_click)

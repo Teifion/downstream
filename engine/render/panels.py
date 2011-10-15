@@ -5,69 +5,17 @@ import math
 import pygame
 from pygame.locals import *
 
-from engine.libs import actor_lib
-
-# Used to define a section of the screen used for build options
-# unit commands, resources etc etc
-class Panel (object):
-    always_redraw = False
-    accepts_keydown = False
-    
-    def __init__(self, engine):
-        super(Panel, self).__init__()
-        
-        self.engine = engine
-        
-        # When set to true the menu will scroll with the screen
-        # much like an actor will
-        self.scrolls = False
-        
-        self.visible = True
-        
-        # Used for caching images as panels don't change that often
-        self.changed = False
-        self.always_changed = False
-        self._image = None
-        
-        self.position = pygame.Rect(0,0,0,0)
-    
-    def contains(self, point):
-        if self.position.left <= point[0] <= self.position.right:
-            if self.position.top <= point[1] <= self.position.bottom:
-                return True
-    
-    def image(self):
-        # Try to use the cached version
-        if self._image != None and not self.changed and not self.always_redraw and not self.always_changed:
-            return self._image, self.position
-        
-        # Draw the iamge
-        self.draw()
-        
-        return self._image, self.position
-    
-    def draw(self):
-        raise Exception("{0}.draw() is not implemented".format(self.__class__))
-    
-    def handle_mousedrag(self, event):
-        pass
-    
-    def handle_mouseup(self, event, drag=False):
-        raise Exception("{0}.handle_mouseup() is not implemented".format(self.__class__))
-
-    def handle_doubleclick(self, first_click, second_click):
-        return self.handle_mouseup(second_click)
+from engine.render import controls
 
 # Used to draw a grid of information much like the build
 # menus from TA or C&C
-class TabularMenu (Panel):
+class TabularMenu (controls.Panel):
     accepts_keyup = True
     
-    def __init__(self, engine, screen, size, grid_size, position):
-        super(TabularMenu, self).__init__(engine)
+    def __init__(self, engine, position, size, grid_size):
+        super(TabularMenu, self).__init__(position, size)
         
         self.screen     = screen
-        self.size       = size
         self.grid_size  = grid_size
         
         self.position.topleft = position
@@ -197,123 +145,17 @@ class TabularMenu (Panel):
         item_name, item_image, queue_length = self.buttons[index]
         
         # What are we looking at?
-        if item_name in self.screen.actor_types:
-            actor_type = self.screen.actor_types[item_name]
-            
-            if "placement_image" in actor_type:
-                # It has a placement image, it's placed by the player
-                self.screen.place_actor_mode(item_name)
-                
-            else:
-                # No placement image, the actor is added to the build queue
-                # and placed later
-                choice = (None, 999999)
-                for a in self.screen.selected_actors:
-                    if actor_lib.can_build(self.screen.actor_types[a.actor_type], actor_type, self.screen.build_lists):
-                        if len(a.build_queue) < choice[1]:
-                            choice = (a, len(a.build_queue))
-                
-                if choice[0] != None:
-                    choice[0].build_queue.append(item_name)
-                    self.update_queue_sizes()
-                else:
-                    raise Exception("""Cannot build that unit using current selection:
-item_name = %s
-Selection: %s""" % (item_name, [a.actor_type for a in self.screen.selected_actors]))
-                
-                    
-        else:
-            raise Exception("Not found in actor types")
+        print(item_name, item_image, queue_length)
+        raise Exception("What now?")
         
         return True
-    
 
-# Used to draw the map
-class MiniMap (Panel):
-    always_redraw = True
-    
-    def __init__(self, engine, size, position, map_size):
-        super(MiniMap, self).__init__(engine)
+# Used to display text upon a blank background, it's got somewhat
+# more functionality than the standard textbox control
+class InfoBox (controls.Panel):
+    def __init__(self, engine, position, size, fill_colour = (0, 0, 0), text_colour = (255, 255, 255)):
+        super(InfoBox, self).__init__(position, size)
         
-        self.size       = size
-        self.map_size   = map_size
-        
-        self.position.topleft = position
-        self.team_colours = {}
-    
-    def draw(self):
-        self._image = pygame.Surface(self.size)
-        self._image.fill((100, 255, 100), pygame.Rect(0, 0, self.size[0], self.size[1]))
-        
-        xratio = self.map_size[0] / self.size[0]
-        yratio = self.map_size[1] / self.size[1]
-        
-        for a in self.engine.current_screen.actors:
-            x,y = a.pos[0] / xratio, a.pos[1] / yratio
-            xsize, ysize = a.size[0] / xratio, a.size[1] / yratio
-            
-            self._image.fill(self.team_colours[a.team], pygame.Rect(x, y, xsize, ysize))
-        
-        # Draw view screen rect on map, take into account that panels
-        # take up some viewable space and draw the white "screen rect"
-        # appropriately
-        draw_area = self.engine.current_screen.draw_area
-        real_width = draw_area[2] - draw_area[0]
-        real_height = draw_area[3] - draw_area[1]
-        
-        # For some reason these overriden values work better, not sure why yet
-        real_width = self.engine.window_width - 150
-        real_height = self.engine.window_height
-        
-        r = pygame.Rect(0,0, real_width / xratio, real_height / yratio)
-        
-        r.left = - self.engine.current_screen.scroll_x / xratio
-        r.top = - self.engine.current_screen.scroll_y / yratio
-        
-        pygame.draw.rect(self._image, (255, 255, 255), r, 1)
-        
-        self.position.size = self.size
-    
-    def handle_mouseup(self, event, drag=False):
-        if drag:
-            if not self.engine.current_screen.mouseup_callback:
-                if event.button != 3:
-                    return None
-        
-        # Get the local X and Y
-        x, y = event.pos
-        x -= self.position[0]
-        y -= self.position[1]
-        
-        draw_area = self.engine.current_screen.draw_area
-        
-        # Ratios to work out where we are
-        xratio = self.map_size[0] / self.size[0]
-        yratio = self.map_size[1] / self.size[1]
-        
-        map_x = x * xratio + draw_area[0]
-        map_y = y * yratio + draw_area[1]
-        
-        if hasattr(event, "button") and event.button == 3:
-            return pygame.event.Event(6, button=3, pos=(map_x, map_y))
-        
-        # If we've left it in callback mode then we need to return
-        # the "true" coordinates
-        elif self.engine.current_screen.mouseup_callback:
-            return pygame.event.Event(6, button=event.button, pos=(map_x, map_y))
-        
-        self.engine.current_screen.scroll_to_coords(map_x, map_y)
-    
-    def handle_mousedrag(self, event):
-        self.handle_mouseup(event)
-
-# Used to display text upon a blank background
-class InfoBox (Panel):
-    def __init__(self, engine, size, position, fill_colour = (0, 0, 0), text_colour = (255, 255, 255)):
-        super(InfoBox, self).__init__(engine)
-        
-        self.size               = size
-        self.position.topleft   = position
         self.fill_colour        = fill_colour
         self.text_colour        = text_colour
         
@@ -335,8 +177,8 @@ class InfoBox (Panel):
         
     
     def draw(self):
-        self._image = pygame.Surface(self.size)
-        self._image.fill(self.fill_colour, pygame.Rect(0, 0, self.size[0], self.size[1]))
+        self._image = pygame.Surface(self.rect.size)
+        self._image.fill(self.fill_colour, pygame.Rect(0, 0, self.rect.width, self.rect.height))
         
         font = pygame.font.SysFont("Helvetica", 16)
         
@@ -357,8 +199,6 @@ class InfoBox (Panel):
             textrect.topleft = t['position']
             
             self._image.blit(textobj, textrect)
-        
-        self.position.size = self.size
         
     def draw_text(self, text, surface, x, y, colour=(0,0,0), font_name="Helvetica", font_size=20):
         font = pygame.font.SysFont(font_name, font_size)

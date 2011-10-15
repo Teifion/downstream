@@ -24,9 +24,9 @@ def make_bg_image(buttons):
     
     return s
 
-class MainMenu (screen.Screen):
+class MainMenu (screen.FullScreen):
     def __init__(self, downstream_game):
-        super(MainMenu, self).__init__((downstream_game.window_width, downstream_game.window_height))
+        super(MainMenu, self).__init__(downstream_game)
         self.engine = downstream_game
         
         buttons = (
