@@ -27,7 +27,6 @@ def make_bg_image(buttons):
 class MainMenu (screen.FullScreen):
     def __init__(self, downstream_game):
         super(MainMenu, self).__init__(downstream_game)
-        self.engine = downstream_game
         
         buttons = (
             ("Quick start", downstream_game.new_game,    []),
@@ -42,12 +41,12 @@ class MainMenu (screen.FullScreen):
         for b_text, b_func, b_args in buttons:
             i += 1
             
-            c = controls.InvisibleButton((300, 110 + i*60), (400, 40))
+            c = controls.Button((300, 110 + i*60), (400, 40), text=b_text)
             
             c.button_up = b_func
             c.button_up_args = b_args
             
-            self.add_button(c)
+            self.controls[b_text.replace(" ", "")] = c
     
     def update(self):
         pass

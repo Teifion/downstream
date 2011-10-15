@@ -11,6 +11,9 @@ def draw_text(surface, text, position, colour=(0,0,0),
         font_obj.set_bold(bold)
         font_obj.set_italic(italic)
     
+    if type(position) == str:
+        position = 10, 10
+    
     textobj = font_obj.render(text, antialias, colour)
     textrect = textobj.get_rect()
     textrect.topleft = position
@@ -21,7 +24,7 @@ class Control (object):
     # returns an image for it to blit, if not then it will
     # pass a copy of the surface to the control for
     # it to draw itself as need be
-    draws_image = False
+    blit_image = False
     
     def __init__(self, position, size):
         super(Control, self).__init__()
@@ -32,7 +35,24 @@ class Control (object):
         
         self.visible = True
         
+        self.button_down = None
+        self.button_up = None
+        
+        self.button_up_args = []
+        self.button_down_args = []
+        
+        self.button_up_kwargs = {}
+        self.button_down_kwargs = {}
+        
+        
         self.update()
+    
+    def contains(self, position):
+        if self.rect.left <= position[0] <= self.rect.right:
+            if self.rect.top <= position[1] <= self.rect.bottom:
+                return True
+        
+        return False
     
     def update(self):
         pass
@@ -42,12 +62,13 @@ class Control (object):
         raise Exception("redraw() is not accepted by this control type")
     
     def draw(self, surf, offset=(0,0)):
-        pass
+        if self.blit_image:
+            raise Exception("This control has blit_image set to True yet the draw() function is being called")
         
 
 class TextDisplay (Control):
     def __init__(self, position, text, font_name="Helvetica", font_size=20, colour=(255,0,0)):
-        super(Control, self).__init__(position, size=(0,0))
+        super(TextDisplay, self).__init__(position, size=(0,0))
         
         self.font = pygame.font.SysFont(font_name, font_size)
         
@@ -87,16 +108,39 @@ class TextDisplay (Control):
             textrect.topleft = (0, 0)
             # self.image.blit(textobj, textrect)
     
-    def draw(self, surf, offset):
+    def draw(self, surf, offset=(0,0)):
         pass
 
 class Button (Control):
+    def __init__(self, position, size, text, fill_colour=(0,0,0), text_colour=(255, 255, 255)):
+        super(Button, self).__init__(position, size)
+        
+        self.has_updated = False
+                
+        self.text = text
+        self.fill_colour = fill_colour
+        self.text_colour = text_colour
+    
+    def update(self):
+        pass
+    
+    def draw(self, surf, offset=(0,0)):
+        surf.fill(self.fill_colour, self.rect)
+        
+        draw_text(surf, text=self.text, position=(self.rect.left + 10, self.rect.top + 10),
+            colour=self.text_colour, font="Helvetica",
+            size=20, antialias=1,
+            bold=False, italic=False, font_obj=None)
+
+class ImageButton (Button):
     def __init__(self, position, image):
+        raise Exception("Not implemented correctly yet")
+        
         self.image = image.copy()
         self.rect = self.image.get_rect()
         self.rect.topleft = position
         
-        super(Control, self).__init__(position, self.rect.size)
+        super(ImageButton, self).__init__(position, self.rect.size)
         
         self.has_updated = False
         self.button_down = None
@@ -107,21 +151,8 @@ class Button (Control):
         
         self.button_up_kwargs = {}
         self.button_down_kwargs = {}
-    
-    def contains(self, pos):
-        if self.rect.left <= pos[0] <= self.rect.right:
-            if self.rect.top <= pos[1] <= self.rect.bottom:
-                return True
-        
-        return False
-    
-    def update(self):
-        pass
-    
-    def draw(self, surf, offset):
-        pass
 
-class InvisibleButton (object):
+class InvisibleButton (Control):
     """Used when we don't want to draw a button
     e.g. it's part of the background or something"""
     def __init__(self, position, size):
@@ -146,6 +177,9 @@ class InvisibleButton (object):
                 return True
         
         return False
+    
+    def draw(self, surf, offset=(0,0)):
+        pass
 
 # A panel is used mostly for display but often has much more complicated
 # behaviour than the rest of the controls (menus etc)

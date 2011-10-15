@@ -20,7 +20,6 @@ class Screen (object):
         
         self.actors = {}
         self.controls = {}
-        self.buttons = []
         
         self.name = ""
         self.engine = engine
@@ -47,9 +46,6 @@ class Screen (object):
         
         self._last_mouseup = [None, -1]
         self._double_click_interval = 0.25
-    
-    def add_button(self, b):
-        self.buttons.append(b)
     
     def update(self):
         """
@@ -102,7 +98,10 @@ class Screen (object):
         # tell us not to
         for i, c in self.controls.items():
             if c.visible:
-                surf.blit(*c.image())
+                if c.blit_image:
+                    surf.blit(*c.image())
+                else:
+                    c.draw(surf)
         
         pygame.display.flip()
     
@@ -153,10 +152,16 @@ class Screen (object):
     def _handle_mousedown(self, event):
         self.mouse_down_at = (event.pos[0] - self.scroll_x, event.pos[1] - self.scroll_y)
         
-        for b in self.buttons:
-            if b.button_down != None:
-                if b.contains(event.pos):
-                    b.button_down(*b.button_down_args, **b.button_down_kwargs)
+        for i, c in self.controls.items():
+            if c.button_down != None:
+                if c.contains(event.pos):
+                    try:
+                        c.button_down(*c.button_down_args, **c.button_down_kwargs)
+                    except Exception as e:
+                        print("Func: %s" % c.button_down)
+                        print("Args: %s" % c.button_down_args)
+                        print("Kwargs: %s" % c.button_down_kwargs)
+                        raise
         
         self.mouse_is_down = True
         self.handle_mousedown(event)
@@ -171,15 +176,15 @@ class Screen (object):
         self._last_mouseup = [event, time.time()]
         real_mouse_pos = (event.pos[0] - self.scroll_x, event.pos[1] - self.scroll_y)
         
-        for b in self.buttons:
-            if b.button_up != None:
-                if b.contains(event.pos):
+        for i, c in self.controls.items():
+            if c.button_up != None:
+                if c.contains(event.pos):
                     try:
-                        b.button_up(*b.button_up_args, **b.button_up_kwargs)
+                        c.button_up(*c.button_up_args, **c.button_up_kwargs)
                     except Exception as e:
-                        print("Func: %s" % b.button_up)
-                        print("Args: %s" % b.button_up_args)
-                        print("Kwargs: %s" % b.button_up_kwargs)
+                        print("Func: %s" % c.button_up)
+                        print("Args: %s" % c.button_up_args)
+                        print("Kwargs: %s" % c.button_up_kwargs)
                         raise
         
         self.mouse_is_down = False
