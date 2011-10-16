@@ -7,8 +7,7 @@ class Downstream (core.EngineV3):
     
     fps = 30
     
-    window_width = 1000
-    window_height = 1000
+    screen_size = [1280, 720]
     
     def __init__(self):
         super(Downstream, self).__init__()
@@ -23,6 +22,7 @@ class Downstream (core.EngineV3):
         
         self.set_screen('Main menu')
         # self.current_screen.begin_transition("Fade to black", callback=self.new_game, trans_kwargs={"total_frames":30})
+        self.new_game()
 
     def new_game(self, file_path=""):
         self.set_screen('Game')

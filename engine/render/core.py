@@ -22,8 +22,6 @@ class Game_rule_error(Game_error):
 
 class EngineV3 (object):
     fps = 30
-    window_width = 0
-    window_height = 0
     
     def __init__(self):
         super(EngineV3, self).__init__()
@@ -40,7 +38,7 @@ class EngineV3 (object):
         pygame.init()
         self.clock = pygame.time.Clock()
         
-        self.display = pygame.display.set_mode((self.window_width, self.window_height))
+        self.display = pygame.display.set_mode(self.screen_size)
     
     def set_screen(self, s, *args, **kwargs):
         # s can be a screen instance or the name of a screen in self.screens
@@ -60,7 +58,7 @@ class EngineV3 (object):
                 raise
         
         s.engine = self
-        s.display = self.display
+        s.activate()
         
         pygame.display.set_caption(s.name)
         self.current_screen = s
