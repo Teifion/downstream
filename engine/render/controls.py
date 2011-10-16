@@ -208,7 +208,7 @@ class Panel (Control):
     def image(self):
         # Try to use the cached version
         if self._image != None and not self.changed and not self.always_redraw and not self.always_changed:
-            return self._image, self.position
+            return self._image, self.rect
         
         # Draw the iamge
         self.draw()
