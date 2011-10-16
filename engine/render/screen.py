@@ -9,8 +9,6 @@ from engine.libs import screen_lib
 
 class Screen (object):
     # When set to true the screen has to regulate the FPS itself
-    self_regulate = False
-    
     fullscreen = False
     
     facings = 360/4# The number of different angles we'll draw
@@ -24,6 +22,10 @@ class Screen (object):
         self.name = ""
         self.engine = engine
         self.size = dimensions
+        
+        # FPS
+        self._next_redraw = time.time()
+        self._redraw_delay = screen_lib.set_fps(self, 30)
         
         self.image_cache = {}
         
@@ -46,6 +48,19 @@ class Screen (object):
         
         self._last_mouseup = [None, -1]
         self._double_click_interval = 0.25
+        
+        self.transition = None
+        self.transition_frame = -1
+        self.on_transition = None
+        self.on_transition_args = None
+        self.on_transition_kwargs = None
+    
+    def begin_transition(self, mode, callback, args=[], kwargs={}, trans_args=[], trans_kwargs={}):
+        self.on_transition = callback
+        self.on_transition_args = []
+        self.on_transition_kwargs = {}
+        
+        self.transition = screen_lib.transitions[mode](self, *trans_args, **trans_kwargs)
     
     def update(self):
         """
@@ -77,7 +92,16 @@ class Screen (object):
     def redraw(self):
         """Basic screens do not have scrolling capabilities
         you'd need to use a subclass for that"""
+        if time.time() < self._next_redraw:
+            return
+        
         surf = self.engine.display
+        
+        if type(self.background) == tuple or type(self.background) == list:
+            surf.fill(self.background)
+        else:
+            self.background = self.background_image.copy()
+            surf.blit(self.background, pygame.Rect(0, 0, self.size[0], self.size[1]))
         
         # CODE NOT YET TESTED
         # Actors
@@ -98,24 +122,25 @@ class Screen (object):
         # tell us not to
         for i, c in self.controls.items():
             if c.visible:
+                c.update()
                 if c.blit_image:
                     surf.blit(*c.image())
                 else:
                     c.draw(surf)
         
-        pygame.display.flip()
-    
-    def update_window(self):
-        """Used when we've changed screen or want to simply redraw everything"""
-        if type(self.background) == tuple or type(self.background) == list:
-            self.display.fill(self.background)
-        else:
-            self.background = self.background_image.copy()
-            self.display.blit(self.background, pygame.Rect(0, 0, self.size[0], self.size[1]))
+        # Potentially a transition too
+        if self.transition != None:
+            self.transition_frame += 1
+            r = self.transition(self.transition_frame)
+            
+            if r == None:
+                self.on_transition(*self.on_transition_args, **self.on_transition_kwargs)
+                return
+
         
         pygame.display.flip()
-        self.redraw()
-    
+        
+        self._next_redraw = time.time() + self._redraw_delay
     
     # Event handlers
     # Internal version allows us to sub-class without requiring a super call

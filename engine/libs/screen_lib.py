@@ -5,7 +5,7 @@ import pygame
 import math
 
 def set_fps(screen, fps):
-    screen._redraw_delay = 1/fps
+    return 1/fps
 
 def get_facing_angle(angle, facings=36):
     """Takes an angle and gives the 'rounded' result"""
@@ -83,3 +83,42 @@ def translate_keyboard(from_keyboard, to_keyboard, key):
     
     # Not in the list, it's assumed it matches the same
     return key
+
+
+def _transition_fade_to_black(the_screen, total_frames=60):
+    surf = the_screen.engine.display
+    
+    def trans(frame):
+        if frame > total_frames:
+            return None
+        
+        v = 255 - ((frame/total_frames) * 255)
+        
+        the_screen.background = (v, v, v)
+        print(the_screen.background)
+        
+        return True
+    
+    return trans
+
+def _transition_fade_all_to_black(the_screen, total_frames=60):
+    surf = the_screen.engine.display
+    
+    def trans(frame):
+        if frame > total_frames:
+            return None
+        
+        v = 255 - ((frame/total_frames) * 255)
+        
+        colour = (v, v, v)
+        surf.fill(colour)
+        
+        return True
+    
+    return trans
+
+transitions = {
+    "Fade to black": _transition_fade_to_black,
+    "Fade to all black": _transition_fade_all_to_black,
+}
+

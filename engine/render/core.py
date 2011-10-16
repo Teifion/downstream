@@ -65,7 +65,7 @@ class EngineV3 (object):
         pygame.display.set_caption(s.name)
         self.current_screen = s
         self.current_screen.activate()
-        self.current_screen.update_window()
+        self.current_screen.redraw()
     
     # Contains main execution loop
     def start(self):
@@ -87,9 +87,7 @@ class EngineV3 (object):
 
                 self.current_screen.update()
                 self.current_screen.redraw()
-
-                if not self.current_screen.self_regulate:
-                    self.clock.tick(self.fps)
+            
         except Exception as e:
             traceback.print_exc(file=sys.stdout)
             self.current_screen.quit()

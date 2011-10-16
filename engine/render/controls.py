@@ -186,6 +186,7 @@ class InvisibleButton (Control):
 class Panel (Control):
     always_redraw = False
     accepts_keydown = False
+    blit_image = True
     
     def __init__(self, position, size):
         super(Panel, self).__init__(position, size)
@@ -214,7 +215,7 @@ class Panel (Control):
         
         return self._image, self.rect
     
-    def draw(self):
+    def draw(self, *args, **kwargs):
         raise Exception("{0}.draw() is not implemented".format(self.__class__))
     
     def handle_mousedrag(self, event):

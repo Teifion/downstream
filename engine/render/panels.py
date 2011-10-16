@@ -174,7 +174,6 @@ class InfoBox (controls.Panel):
             "suffix":       suffix,
             "typecast":     typecast,
         })  
-        
     
     def draw(self):
         self._image = pygame.Surface(self.rect.size)
