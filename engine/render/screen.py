@@ -8,13 +8,15 @@ from pygame.locals import *
 from engine.libs import screen_lib
 
 class Screen (object):
-    # When set to true the screen has to regulate the FPS itself
-    fullscreen = False
-    
     facings = 360/4# The number of different angles we'll draw
     
-    def __init__(self, engine, dimensions):
+    def __init__(self, engine, dimensions, fullscreen=False):
         super(Screen, self).__init__()
+        
+        self.fullscreen = fullscreen
+        
+        if dimensions == None:
+            self.fullscreen = True
         
         self.actors = {}
         self.controls = {}
@@ -35,16 +37,13 @@ class Screen (object):
         self.mouse = [0,0]
         self.mouse_down_at = [0,0]
         
-        self.engine = None
         self.background_image = None
         self.background = (200, 200, 200)# Default to a grey background
         
+        self.surf = pygame.Surface(dimensions)
+        
         if self.fullscreen:
-            # TODO work out if it's okay to use the HWSURFACE flag
-            # or if I need to stick wih FULLSCREEN
-            self.surf = pygame.display.set_mode(dimensions, FULLSCREEN)
-        else:
-            self.surf = pygame.Surface(dimensions)
+            self.switch_to_fullscreen()
         
         self._last_mouseup = [None, -1]
         self._double_click_interval = 0.25
@@ -61,6 +60,13 @@ class Screen (object):
         self.on_transition_kwargs = {}
         
         self.transition = screen_lib.transitions[mode](self, *trans_args, **trans_kwargs)
+    
+    def activate(self):
+        """Called when activated after a screen change"""
+        if self.fullscreen:
+            self.switch_to_fullscreen()
+        else:
+            self.switch_to_windowed()
     
     def update(self):
         """
@@ -103,6 +109,17 @@ class Screen (object):
             self.background = self.background_image.copy()
             surf.blit(self.background, pygame.Rect(0, 0, self.size[0], self.size[1]))
         
+        self.draw_actors()
+        self.draw_controls()
+        self.draw_transition()
+        
+        pygame.display.flip()
+        
+        self._next_redraw = time.time() + self._redraw_delay
+    
+    def draw_actors(self):
+        surf = self.engine.display
+        
         # CODE NOT YET TESTED
         # Actors
         for i, a in self.actors.items():
@@ -117,6 +134,9 @@ class Screen (object):
                     r.top = a.pos[1] + self.draw_margin[1] - r.height/2
                     
                     surf.blit(actor_img, r)
+    
+    def draw_controls(self):
+        surf = self.engine.display
         
         # Panels, unlike actors we draw all of them unless they
         # tell us not to
@@ -127,6 +147,9 @@ class Screen (object):
                     surf.blit(*c.image())
                 else:
                     c.draw(surf)
+    
+    def draw_transition(self):
+        surf = self.engine.display
         
         # Potentially a transition too
         if self.transition != None:
@@ -136,11 +159,6 @@ class Screen (object):
             if r == None:
                 self.on_transition(*self.on_transition_args, **self.on_transition_kwargs)
                 return
-
-        
-        pygame.display.flip()
-        
-        self._next_redraw = time.time() + self._redraw_delay
     
     # Event handlers
     # Internal version allows us to sub-class without requiring a super call
@@ -272,10 +290,6 @@ class Screen (object):
     def handle_mousedragup(self, event, drag_rect):
         pass
     
-    def activate(self):
-        """The screen is now active and ready to roll"""
-        pass
-    
     def quit(self, event=None):
         self.engine.quit()
     
@@ -285,15 +299,7 @@ class Screen (object):
             if self.keys_down[310] <= self.keys_down[113]:# Cmd has to be pushed first
                 self.quit()
     
-class FullScreen (Screen):
-    fullscreen = True
-    
-    def __init__(self, engine, preferred_size=None):
-        dimensions = self.get_max_size(preferred_size)
-        
-        super(FullScreen, self).__init__(engine, dimensions = dimensions)
-    
-    def get_max_size(self, preferred_size=None):
+    def get_max_window_size(self, preferred_size=None):
         """Takes the preferred size and gets the closest it can (rounding
         down to a smaller screen). It will always try to get the same ratio,
         if it cannot find the same ratio it will error."""
@@ -320,9 +326,18 @@ class FullScreen (Screen):
         if found_size != (0,0):
             return found_size
         return None
-            
     
-
-
-
+    def switch_to_fullscreen(self):
+        self.fullscreen = True
+        
+        dimensions = self.get_max_window_size(self.size)
+        
+        # TODO work out if it's okay to use the HWSURFACE flag
+        # or if I need to stick wih FULLSCREEN
+        self.engine.display = pygame.display.set_mode(dimensions, FULLSCREEN)
+    
+    def switch_to_windowed(self):
+        self.fullscreen = False
+        
+        self.engine.display = pygame.display.set_mode(self.size)
 
