@@ -22,7 +22,7 @@ class Downstream (core.EngineV3):
         self.screens['Game'] = game.Game
         
         self.set_screen('Main menu')
-        self.new_game()
+        # self.current_screen.begin_transition("Fade to black", callback=self.new_game, trans_kwargs={"total_frames":30})
 
     def new_game(self, file_path=""):
         self.set_screen('Game')
