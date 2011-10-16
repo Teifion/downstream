@@ -95,7 +95,6 @@ def _transition_fade_to_black(the_screen, total_frames=60):
         v = 255 - ((frame/total_frames) * 255)
         
         the_screen.background = (v, v, v)
-        print(the_screen.background)
         
         return True
     
