@@ -1,6 +1,6 @@
 from engine.render import core
 
-from game.game_screens import main_menu, game
+from game.game_screens import main_menu, game_screen
 
 class Downstream (core.EngineV3):
     name = "Downstream"
@@ -19,7 +19,7 @@ class Downstream (core.EngineV3):
         super(Downstream, self).startup()
         
         self.screens['Main menu'] = main_menu.MainMenu(self)
-        self.screens['Game'] = game.Game
+        self.screens['Game'] = game_screen.GameScreen
         
         self.set_screen('Main menu')
         # self.current_screen.begin_transition("Fade to black", callback=self.new_game, trans_kwargs={"total_frames":30})
@@ -28,5 +28,8 @@ class Downstream (core.EngineV3):
     def new_game(self, file_path=""):
         self.set_screen('Game')
         
-        self.current_screen.name = "Downstream"
+        cs = self.current_screen
+        
+        cs.name = "Downstream"
+        cs.load_game("data/dummy.json")
 

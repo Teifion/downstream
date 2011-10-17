@@ -1,0 +1,25 @@
+{
+    "network":  {
+        "nodes": {
+            "0":    {"owner":"player_0", "position":[50, 150]},
+            
+            "1":    {"owner":"neutral", "position":[100, 100]},
+            "2":    {"owner":"neutral", "position":[100, 200]},
+            "3":    {"owner":"neutral", "position":[150, 100]},
+            "4":    {"owner":"neutral", "position":[150, 200]},
+            
+            "5":    {"owner":"player_1", "position":[200, 150]},
+            
+            "6":    {"owner":"neutral", "position":[200, 50]},
+            "7":    {"owner":"neutral", "position":[50, 250]}
+        },
+        
+        "connections": [
+            [0, 1], [0, 2],
+            [1, 3],
+            [2, 3], [2, 4], [2, 7],
+            [3, 5], [3, 6],
+            [4, 5]
+        ]
+    }
+}
