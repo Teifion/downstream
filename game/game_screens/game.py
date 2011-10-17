@@ -1,10 +1,17 @@
+import collections
+
 import pygame
 
 from engine.render import screen, panels
 
 class Game (screen.Screen):
     def __init__(self, downstream_game):
-        super(Game, self).__init__(downstream_game, dimensions=downstream_game.screen_size)
+        super(Game, self).__init__(downstream_game,
+            dimensions=downstream_game.screen_size,
+            fullscreen=downstream_game.fullscreen
+        )
+        
+        self.applications = []
         
         self.background = (0,0,0)
         
@@ -21,14 +28,8 @@ class Game (screen.Screen):
             fill_colour = (50,250,50),
             text_colour = (255, 255, 255)
         )
-        
-        self.controls["current_app"] = panels.InfoBox(downstream_game,
-            size = (500, 500),
-            position = (450, 350),
-            fill_colour = (250,50,50),
-            text_colour = (255, 255, 255)
-        )
     
     def update(self):
         pass
-
+    
+    

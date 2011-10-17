@@ -26,7 +26,10 @@ def make_bg_image(buttons):
 
 class MainMenu (screen.Screen):
     def __init__(self, downstream_game):
-        super(MainMenu, self).__init__(downstream_game, dimensions=downstream_game.screen_size, fullscreen=True)
+        super(MainMenu, self).__init__(downstream_game,
+            dimensions=downstream_game.screen_size,
+            fullscreen=downstream_game.fullscreen
+        )
         
         buttons = (
             ("Quick start", downstream_game.new_game,    []),

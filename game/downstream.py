@@ -8,6 +8,7 @@ class Downstream (core.EngineV3):
     fps = 30
     
     screen_size = [1280, 720]
+    fullscreen = False
     
     def __init__(self):
         super(Downstream, self).__init__()
