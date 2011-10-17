@@ -26,7 +26,7 @@ class Control (object):
     # it to draw itself as need be
     blit_image = False
     
-    def __init__(self, position, size):
+    def __init__(self, position, size, priority=0):
         super(Control, self).__init__()
         
         self.rect = pygame.Rect(0,0,0,0)
@@ -44,6 +44,7 @@ class Control (object):
         self.button_up_kwargs = {}
         self.button_down_kwargs = {}
         
+        self.draw_priority = priority
         
         self.update()
     
@@ -67,10 +68,10 @@ class Control (object):
         
 
 class TextDisplay (Control):
-    def __init__(self, position, text, font_name="Helvetica", font_size=20, colour=(255,0,0)):
+    def __init__(self, position, text, font_name="Helvetica", font_size=20, colour=(255,0,0), priority=0):
         super(TextDisplay, self).__init__(position, size=(0,0))
         
-        self.font = pygame.font.SysFont(font_name, font_size)
+        self.font = pygame.font.SysFont(font_name, font_size, priority)
         
         self.colour = colour
         self.text = text
@@ -112,8 +113,8 @@ class TextDisplay (Control):
         pass
 
 class Button (Control):
-    def __init__(self, position, size, text, fill_colour=(0,0,0), text_colour=(255, 255, 255)):
-        super(Button, self).__init__(position, size)
+    def __init__(self, position, size, text, fill_colour=(0,0,0), text_colour=(255, 255, 255), priority=0):
+        super(Button, self).__init__(position, size, priority)
         
         self.has_updated = False
                 
@@ -133,14 +134,14 @@ class Button (Control):
             bold=False, italic=False, font_obj=None)
 
 class ImageButton (Button):
-    def __init__(self, position, image):
+    def __init__(self, position, image, priority=0):
         raise Exception("Not implemented correctly yet")
         
         self.image = image.copy()
         self.rect = self.image.get_rect()
         self.rect.topleft = position
         
-        super(ImageButton, self).__init__(position, self.rect.size)
+        super(ImageButton, self).__init__(position, self.rect.size, priority)
         
         self.has_updated = False
         self.button_down = None
@@ -155,8 +156,8 @@ class ImageButton (Button):
 class InvisibleButton (Control):
     """Used when we don't want to draw a button
     e.g. it's part of the background or something"""
-    def __init__(self, position, size):
-        super(InvisibleButton, self).__init__()
+    def __init__(self, position, size, priority=0):
+        super(InvisibleButton, self).__init__((-1, -1), (0,0))
         
         self.left, self.top = position
         self.right = self.left + size[0]
@@ -188,14 +189,10 @@ class Panel (Control):
     accepts_keydown = False
     blit_image = True
     
-    def __init__(self, position, size):
-        super(Panel, self).__init__(position, size)
+    def __init__(self, position, size, priority=0):
+        super(Panel, self).__init__(position, size, priority)
         
-        # When set to true the menu will scroll with the screen
-        # much like an actor will
-        self.scrolls = False
-        
-        # Used for caching images as panels don't change that often
+        # Used for caching images as panels don't always change that often
         self.changed = False
         self.always_changed = False
         self._image = None

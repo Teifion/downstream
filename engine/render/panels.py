@@ -12,8 +12,8 @@ from engine.render import controls
 class TabularMenu (controls.Panel):
     accepts_keyup = True
     
-    def __init__(self, engine, position, size, grid_size):
-        super(TabularMenu, self).__init__(position, size)
+    def __init__(self, engine, position, size, grid_size, priority=0):
+        super(TabularMenu, self).__init__(position, size, priority)
         
         self.screen     = screen
         self.grid_size  = grid_size
@@ -153,8 +153,8 @@ class TabularMenu (controls.Panel):
 # Used to display text upon a blank background, it's got somewhat
 # more functionality than the standard textbox control
 class InfoBox (controls.Panel):
-    def __init__(self, engine, position, size, fill_colour = (0, 0, 0), text_colour = (255, 255, 255)):
-        super(InfoBox, self).__init__(position, size)
+    def __init__(self, engine, position, size, fill_colour = (0, 0, 0), text_colour = (255, 255, 255), priority=0):
+        super(InfoBox, self).__init__(position, size, priority)
         
         self.fill_colour        = fill_colour
         self.text_colour        = text_colour

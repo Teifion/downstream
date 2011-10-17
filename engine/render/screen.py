@@ -112,10 +112,15 @@ class Screen (object):
         self.draw_actors()
         self.draw_controls()
         self.draw_transition()
+        self.post_redraw()
         
         pygame.display.flip()
         
         self._next_redraw = time.time() + self._redraw_delay
+    
+    def post_redraw(self):
+        """Allows us to append functionality to the redraw function"""
+        pass
     
     def draw_actors(self):
         surf = self.engine.display
@@ -138,15 +143,32 @@ class Screen (object):
     def draw_controls(self):
         surf = self.engine.display
         
+        # We use all of this to draw the controls in order
+        # of priority (high priority goes at the top of the screen)
+        priorities = set()
+        control_sets = {}
+        for i, c in self.controls.items():
+            p = c.draw_priority
+            if p not in control_sets: control_sets[p] = []
+            
+            control_sets[p].append(i)
+            priorities.add(c.draw_priority)
+        
+        priorities = list(priorities)
+        priorities.sort()
+        priorities.reverse()
+        
         # Panels, unlike actors we draw all of them unless they
         # tell us not to
-        for i, c in self.controls.items():
-            if c.visible:
-                c.update()
-                if c.blit_image:
-                    surf.blit(*c.image())
-                else:
-                    c.draw(surf)
+        for p in priorities:
+            for i in control_sets[p]:
+                c = self.controls[i]
+                if c.visible:
+                    c.update()
+                    if c.blit_image:
+                        surf.blit(*c.image())
+                    else:
+                        c.draw(surf)
     
     def draw_transition(self):
         surf = self.engine.display
