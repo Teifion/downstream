@@ -22,14 +22,14 @@ class GameScreen (screen.Screen):
         self.network = None
         
         self.controls["network_map"] = network_map.NetworkMap(
-            size = (300, 200),
+            size = (300, 300),
             position = (10, 10),
             network = self.network
         )
         
         self.controls["job_list"] = panels.InfoBox(downstream_game,
             size = (300, 490),
-            position = (10, 220),
+            position = (10, 320),
             fill_colour = (50,250,50),
             text_colour = (255, 255, 255)
         )
@@ -43,3 +43,7 @@ class GameScreen (screen.Screen):
         
         # Load network
         self.network = network.Network(data['network'])
+        self.controls['network_map'].network = self.network
+        
+        
+        

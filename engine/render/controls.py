@@ -26,6 +26,8 @@ class Control (object):
     # it to draw itself as need be
     blit_image = False
     
+    always_redraw = False
+    
     def __init__(self, position, size, priority=0):
         super(Control, self).__init__()
         
@@ -185,7 +187,6 @@ class InvisibleButton (Control):
 # A panel is used mostly for display but often has much more complicated
 # behaviour than the rest of the controls (menus etc)
 class Panel (Control):
-    always_redraw = False
     accepts_keydown = False
     blit_image = True
     
