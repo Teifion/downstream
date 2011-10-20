@@ -8,4 +8,6 @@ class Node (object):
         
         self.connections = set()
         
-
+        self.software = {}
+        self.jobs = {}
+    

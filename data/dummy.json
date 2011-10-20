@@ -1,7 +1,11 @@
 {
     "network":  {
         "nodes": {
-            "0":    {"owner":"player_0", "position":[50, 150]},
+            "0":    {"owner":"player_0", "position":[50, 150],
+                "software": [
+                    {"app":"dict_cracker", "version":1}
+                ]
+            },
             
             "1":    {"owner":"neutral", "position":[100, 100]},
             "2":    {"owner":"neutral", "position":[100, 200]},

@@ -1,6 +1,6 @@
 import pygame
 
-from game import application
+from engine.render import controls
 
 player_colours = {
     "player_0": ((0, 0, 100), (100, 100, 255)),
@@ -8,7 +8,7 @@ player_colours = {
     "neutral":  ((100, 100, 100), (255, 255, 255)),
 }
 
-class NetworkMap (application.Application):
+class NetworkMap (controls.Panel):
     always_redraw = True
     
     def __init__(self, size, position, network, priority=0):

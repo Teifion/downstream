@@ -5,8 +5,8 @@ import pygame
 
 from engine.render import screen, panels
 
-from game.classes import network
-from game.apps import network_map
+from game.classes import network, software, network_map
+
 
 class GameScreen (screen.Screen):
     def __init__(self, downstream_game):
@@ -15,11 +15,10 @@ class GameScreen (screen.Screen):
             fullscreen=downstream_game.fullscreen
         )
         
-        self.applications = []
-        
         self.background = (0,0,0)
         
         self.network = None
+        self.software = None
         
         self.controls["network_map"] = network_map.NetworkMap(
             size = (300, 300),
@@ -41,9 +40,10 @@ class GameScreen (screen.Screen):
         with open(file_path) as f:
             data = json.loads(f.read())
         
+        # Load software
+        self.software = software.Software("data/game_data.json")
+        
         # Load network
         self.network = network.Network(data['network'])
         self.controls['network_map'].network = self.network
-        
-        
         

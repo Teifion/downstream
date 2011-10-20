@@ -1,0 +1,10 @@
+{
+    "apps": {
+        "dict_cracker": {
+            "type":     "cracker",
+            "kwargs":   {
+                "cpu_cost":     1
+            }
+        }
+    }
+}
