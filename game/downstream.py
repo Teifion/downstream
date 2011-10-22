@@ -32,4 +32,7 @@ class Downstream (core.EngineV3):
         
         cs.name = "Downstream"
         cs.load_game("data/dummy.json")
+        
+        cs.network.launch_app(owner_id=0, node_id=0, app_name="dict_cracker")
+        
 
