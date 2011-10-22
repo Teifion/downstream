@@ -3,9 +3,9 @@ import json
 
 import pygame
 
-from engine.render import screen, panels
+from engine.render import screen
 
-from game.classes import network, software, network_map
+from game.classes import network, software, network_map, job_list
 
 
 class GameScreen (screen.Screen):
@@ -18,7 +18,6 @@ class GameScreen (screen.Screen):
         self.background = (0,0,0)
         
         self.network = None
-        self.software = None
         
         self.controls["network_map"] = network_map.NetworkMap(
             size = (300, 300),
@@ -26,7 +25,7 @@ class GameScreen (screen.Screen):
             network = self.network
         )
         
-        self.controls["job_list"] = panels.InfoBox(downstream_game,
+        self.controls["job_list"] = job_list.JobList(job_dict = {},
             size = (300, 490),
             position = (10, 320),
             fill_colour = (50,250,50),
@@ -40,10 +39,8 @@ class GameScreen (screen.Screen):
         with open(file_path) as f:
             data = json.loads(f.read())
         
-        # Load software
-        self.software = software.Software("data/game_data.json")
-        
         # Load network
         self.network = network.Network(data['network'])
+        self.network.load_software("data/game_data.json")
         self.controls['network_map'].network = self.network
         
