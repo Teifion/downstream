@@ -1,10 +1,9 @@
 {
     "apps": {
         "dict_cracker": {
-            "type":     "cracker",
-            "kwargs":   {
-                "cpu_cost":     1
-            }
+            "type":         "cracker",
+            "short_name":   "crack",
+            "full_name":    "crack"
         }
     }
 }

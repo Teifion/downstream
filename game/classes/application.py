@@ -1,9 +1,16 @@
 from engine.render import controls
 
 class Application (object):
-    def __init__(self, app_type, version=1, **job_data):
+    """An application is passed job data and spits out a job class with some
+    custom functions dynamically created by the Application"""
+    
+    def __init__(self, app_type, version=1, **app_data):
         super(Application, self).__init__()
         
         self.app_type = app_type
         self.version = version
-        self.job_data = job_data
+        self.data = app_data
+
+    def launch(self):
+        raise Exception("Not implemented")
+

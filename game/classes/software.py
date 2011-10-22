@@ -29,6 +29,8 @@ class Software (object):
         
         self.apps[app_name] = app_class(**app_data)
     
-    def get_app(self):
-        """docstring for get_app"""
-        pass
+    def launch_app(self, owner, app_name, version=1, **kwargs):
+        the_app = self.apps[app_name]
+        the_job = the_app.launch(owner, version, **kwargs)
+        
+        return the_job
