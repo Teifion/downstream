@@ -7,8 +7,8 @@ import pygame
 from engine.render import screen
 from engine.libs import screen_lib
 
-from game.classes import network, software, network_map, job_list
-
+from game.classes import network, software, player
+from game.panels import network_map, job_list, node_info
 
 class GameScreen (screen.Screen):
     def __init__(self, downstream_game):
@@ -38,6 +38,14 @@ class GameScreen (screen.Screen):
             network = self.network
         )
         
+        self.controls["node_info"] = node_info.NodeInfo(
+            size = (300, downstream_game.screen_size[1] - 20),
+            position = (downstream_game.screen_size[0] - 310, 10),
+            fill_colour = (50,50,50),
+            text_colour = (255, 255, 255),
+            network = self.network
+        )
+        
         self.tick = 0
     
     def update(self):
@@ -46,8 +54,15 @@ class GameScreen (screen.Screen):
         
         self.tick += 1
         
+        to_remove = []
         for jid, job in self.network.jobs.items():
             job.cycle()
+            
+            if job.is_complete:
+                to_remove.append(jid)
+        
+        for r in to_remove:
+            del(self.network.jobs[r])
         
         self._next_update = time.time() + self._update_delay
     
@@ -58,6 +73,11 @@ class GameScreen (screen.Screen):
         # Load network
         self.network = network.Network(data['network'])
         self.network.load_software("data/game_data.json")
+        
+        for k, v in data['players'].items():
+            self.network.players[int(k)] = player.Player(int(k), v)
+        
         self.controls['network_map'].network = self.network
         self.controls['job_list'].network = self.network
+        self.controls['node_info'].network = self.network
 
