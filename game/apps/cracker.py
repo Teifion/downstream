@@ -33,7 +33,7 @@ class Cracker (application.Application):
         
         return crack_time
     
-    def launch(self, owner, version, target_password):
+    def launch(self, network, owner, version, target_password):
         j = job.Job(
             owner           = owner,
             version         = version,
@@ -47,7 +47,7 @@ class Cracker (application.Application):
             pass
         
         def _complete():
-            pass
+            network.players[owner].passwords.add(target_password['id'])
         
         j._cycle    = _cycle
         j._complete = _complete
