@@ -6,10 +6,14 @@ class Network (object):
     def __init__(self, data=None, software=None):
         super(Network, self).__init__()
         
+        self.players        = {}
+        
         self.nodes          = {}
         self.connections    = set()
         self.jobs           = {}
         self.software       = software
+        
+        self.selected_node  = -1
         
         if data != None:
             self.load_from_data(data)
@@ -41,7 +45,7 @@ class Network (object):
         if version < 0:
             raise KeyError("Node[%s] has no program by the name of %s" % (node_id, app_name))
         
-        the_job = self.software.launch_app(owner_id, app_name, version, **kwargs)
+        the_job = self.software.launch_app(self, owner_id, app_name, version, **kwargs)
         the_job.node = node_id
         
         while True:
