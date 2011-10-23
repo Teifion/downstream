@@ -1,6 +1,7 @@
 from __future__ import division
 
 import random
+import time
 
 class User (object):
     """Defines a user profile on a network node."""
@@ -12,7 +13,7 @@ class User (object):
 
 def make_password(brute_force=1, dictionary=1, rainbow=1):
     return {
-        "id":           random.random(),
+        "id":           "%s.%s" % (random.random(), time.time()),
         "brute_force":  brute_force,
         "dictionary":   dictionary,
         "rainbow":      rainbow,
