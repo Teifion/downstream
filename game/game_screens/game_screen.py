@@ -80,4 +80,4 @@ class GameScreen (screen.Screen):
         self.controls['network_map'].network = self.network
         self.controls['job_list'].network = self.network
         self.controls['node_info'].network = self.network
-
+        

@@ -5,7 +5,12 @@
     },
     "network":  {
         "nodes": {
-            "0":    {"owner":"player_0", "password":{"rainbow":-1}, "position":[50, 150], "cpu_power": 1,
+            "0":    {
+                "name":         "Human",
+                "owner":        "player_0",
+                "password":     {"rainbow":-1},
+                "position":     [50, 150],
+                "cpu_power":    1,
                 "software": {
                     "dict_cracker": 1
                 }
