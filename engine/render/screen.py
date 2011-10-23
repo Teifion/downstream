@@ -251,6 +251,11 @@ class Screen (object):
                         print("Args: %s" % c.button_up_args)
                         print("Kwargs: %s" % c.button_up_kwargs)
                         raise
+            elif c.accepts_mouseup:
+                if c.contains(event.pos):
+                    c.handle_mouseup(event)
+                    
+            
         
         self.mouse_is_down = False
         if real_mouse_pos == self.mouse_down_at:

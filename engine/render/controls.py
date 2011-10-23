@@ -188,6 +188,7 @@ class InvisibleButton (Control):
 # behaviour than the rest of the controls (menus etc)
 class Panel (Control):
     accepts_keydown = False
+    accepts_mouseup = True
     blit_image = True
     
     def __init__(self, position, size, priority=0):
@@ -199,8 +200,8 @@ class Panel (Control):
         self._image = None
     
     def contains(self, point):
-        if self.position.left <= point[0] <= self.position.right:
-            if self.position.top <= point[1] <= self.position.bottom:
+        if self.rect.left <= point[0] <= self.rect.right:
+            if self.rect.top <= point[1] <= self.rect.bottom:
                 return True
     
     def image(self):
