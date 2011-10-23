@@ -5,16 +5,19 @@ class Job (object):
     there's no future mixup with the Process from the Multiprocessing
     module."""
     
-    def __init__(self, owner, version=1, short_name="jbclas", full_name="Job class"):
+    def __init__(self, owner, version=1, short_name="jbclas", full_name="Job class", max_progress=1, max_cpu=-1):
         super(Job, self).__init__()
         
         self.progress = 0
-        self.max_progress = 1
+        self.max_progress = max_progress
         
         self.owner = owner
         
         self.short_name = short_name
         self.full_name  = full_name
+        
+        # It's possible that an app cannot run beyond a certain speed
+        self.max_cpu = max_cpu
     
     def get_progress(self):
         return (self.max_progress / self.progress) * 100
@@ -27,7 +30,7 @@ class Job (object):
     
     def cycle(self, cpu_points = 1):
         self._cycle(cpu_points)
-        self.progress += cpu_points
+        self.progress += min(cpu_points, self.max_cpu)
         
         if self.progress >= self.max_progress:
             self._complete()
