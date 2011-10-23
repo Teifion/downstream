@@ -42,6 +42,7 @@ class Network (object):
             raise KeyError("Node[%s] has no program by the name of %s" % (node_id, app_name))
         
         the_job = self.software.launch_app(owner_id, app_name, version, **kwargs)
+        the_job.node = node_id
         
         while True:
             # Keep trying till we get a random number not yet used
