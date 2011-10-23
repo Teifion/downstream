@@ -31,9 +31,9 @@ class GameScreen (screen.Screen):
         )
         
         self.controls["job_list"] = job_list.JobList(
-            size = (300, 490),
+            size = (300, 390),
             position = (10, 320),
-            fill_colour = (50,250,50),
+            fill_colour = (50,50,50),
             text_colour = (255, 255, 255),
             network = self.network
         )
