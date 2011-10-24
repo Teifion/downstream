@@ -1,8 +1,14 @@
 from __future__ import division
 
+import math
+
 import pygame
 
 from engine.render import controls
+
+row_height = 22
+header_size = 19
+row_size = 17
 
 class NodeInfo (controls.Panel):
     always_redraw = True
@@ -28,7 +34,50 @@ class NodeInfo (controls.Panel):
         the_node = self.network.nodes[self.network.selected_node]
         
         controls.draw_text(self._image, "%s [%s]" % (the_node.name, self.network.selected_node),
-            (5, 5), self.text_colour, size=20)
+            (15, 5), self.text_colour, size=22)
+        
+        controls.draw_text(self._image, "Program", (5, row_height + 5), self.text_colour, size=header_size)
+        controls.draw_text(self._image, "Version", (170, row_height + 5), self.text_colour, size=header_size)
+        
+        keys = list(the_node.programs.keys())
+        keys.sort()
+        
+        for i, prog in enumerate(keys):
+            ver = the_node.programs[prog]
+            
+            controls.draw_text(self._image, prog, (5, 5 + row_height*2 + i*row_height), self.text_colour, size=row_size)
+            controls.draw_text(self._image, str(float(ver)), (170, 5 + row_height*2 + i*row_height), self.text_colour, size=row_size)
+    
+    def handle_mouseup(self, event):
+        if self.network == None:
+            return
+        
+        if self.network.selected_node < 0:
+            return
+        
+        the_node = self.network.nodes[self.network.selected_node]
+        
+        relative_pos = (
+            event.pos[0] - self.rect.left,
+            event.pos[1] - self.rect.top,
+        )
+        
+        row = int(math.floor(relative_pos[1] / row_height)) - 1
+        row -= 1
+        
+        # Clicked header
+        if row < 0:
+            return
+        
+        key_list = list(the_node.programs.keys())
+        key_list.sort()
+        
+        # Clicked too far down
+        if row > len(key_list):
+            return
+        
+        print("Need to show app window for %s" % key_list[row])
+            
 
 
 
