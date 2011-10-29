@@ -57,6 +57,7 @@ class NodeInfo (controls.Panel):
             controls.draw_text(self._image, str(float(ver)), (170, 5 + row_height*2 + i*row_height), self.text_colour, size=row_size)
     
     def handle_mouseup(self, event):
+        self.selected = -1
         if self.network == None:
             return
         
