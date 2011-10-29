@@ -31,17 +31,18 @@ class GameScreen (screen.Screen):
         )
         
         self.controls["job_list"] = job_list.JobList(
-            size = (300, 390),
-            position = (10, 320),
+            size = (300, downstream_game.screen_size[1] - 20),
+            position = (downstream_game.screen_size[0] - 310, 10),
             fill_colour = (50,50,50),
             text_colour = (255, 255, 255),
             network = self.network
         )
         
         self.controls["node_info"] = node_info.NodeInfo(
-            size = (300, downstream_game.screen_size[1] - 20),
-            position = (downstream_game.screen_size[0] - 310, 10),
+            size = (300, 390),
+            position = (10, 320),
             fill_colour = (50,50,50),
+            selected_colour = (50, 50, 100),
             text_colour = (255, 255, 255),
             network = self.network
         )
