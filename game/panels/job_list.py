@@ -73,7 +73,7 @@ class JobList (controls.Panel):
         key_list.sort()
         
         # Clicked too far down
-        if row > len(key_list):
+        if row >= len(key_list):
             return
         
         print("Need to show app window for %s" % key_list[row])
