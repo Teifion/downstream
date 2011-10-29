@@ -12,6 +12,7 @@ row_size = 17
 
 class JobList (controls.Panel):
     always_redraw = True
+    accepts_mouseup = True
     
     def __init__(self, network, size, position, priority=0, fill_colour=(0,0,0), text_colour=(255, 255, 255)):
         super(JobList, self).__init__(position, size, priority)

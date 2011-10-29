@@ -218,14 +218,15 @@ class Screen (object):
         self.mouse_down_at = (event.pos[0] - self.scroll_x, event.pos[1] - self.scroll_y)
         
         for i, c in self.controls.items():
-            if c.button_down != None:
+            if c.accepts_mousedown:
                 if c.contains(event.pos):
                     try:
-                        c.button_down(*c.button_down_args, **c.button_down_kwargs)
+                        c.handle_mousedown(event, *c.mousedown_args, **c.mousedown_kwargs)
                     except Exception as e:
-                        print("Func: %s" % c.button_down)
-                        print("Args: %s" % c.button_down_args)
-                        print("Kwargs: %s" % c.button_down_kwargs)
+                        print("Func: %s" % c.handle_mousedown)
+                        print("Event: %s" % event)
+                        print("Args: %s" % c.mousedown_args)
+                        print("Kwargs: %s" % c.mousedown_kwargs)
                         raise
         
         self.mouse_is_down = True
@@ -242,20 +243,16 @@ class Screen (object):
         real_mouse_pos = (event.pos[0] - self.scroll_x, event.pos[1] - self.scroll_y)
         
         for i, c in self.controls.items():
-            if c.button_up != None:
+            if c.accepts_mouseup:
                 if c.contains(event.pos):
                     try:
-                        c.button_up(*c.button_up_args, **c.button_up_kwargs)
+                        c.handle_mouseup(event, *c.mouseup_args, **c.mouseup_kwargs)
                     except Exception as e:
-                        print("Func: %s" % c.button_up)
-                        print("Args: %s" % c.button_up_args)
-                        print("Kwargs: %s" % c.button_up_kwargs)
+                        print("Func: %s" % c.handle_mouseup)
+                        print("Event: %s" % event)
+                        print("Args: %s" % c.mouseup_args)
+                        print("Kwargs: %s" % c.mouseup_kwargs)
                         raise
-            elif c.accepts_mouseup:
-                if c.contains(event.pos):
-                    c.handle_mouseup(event)
-                    
-            
         
         self.mouse_is_down = False
         if real_mouse_pos == self.mouse_down_at:

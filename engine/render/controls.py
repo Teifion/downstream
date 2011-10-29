@@ -28,6 +28,9 @@ class Control (object):
     
     always_redraw = False
     
+    accepts_mouseup = False
+    accepts_mousedown = False
+    
     def __init__(self, position, size, priority=0):
         super(Control, self).__init__()
         
@@ -37,14 +40,11 @@ class Control (object):
         
         self.visible = True
         
-        self.button_down = None
-        self.button_up = None
+        self.mouseup_args = []
+        self.mousedown_args = []
         
-        self.button_up_args = []
-        self.button_down_args = []
-        
-        self.button_up_kwargs = {}
-        self.button_down_kwargs = {}
+        self.mouseup_kwargs = {}
+        self.mousedown_kwargs = {}
         
         self.draw_priority = priority
         
@@ -67,6 +67,19 @@ class Control (object):
     def draw(self, surf, offset=(0,0)):
         if self.blit_image:
             raise Exception("This control has blit_image set to True yet the draw() function is being called")
+    
+    def handle_mousedrag(self, event):
+        pass
+
+    def handle_mousedown(self, event, *args, **kwargs):
+        raise Exception("{0}.handle_mousedown() is not implemented".format(self.__class__))
+
+    def handle_mouseup(self, event, *args, **kwargs):
+        raise Exception("{0}.handle_mouseup() is not implemented".format(self.__class__))
+
+    def handle_doubleclick(self, first_click, second_click):
+        return self.handle_mouseup(second_click)
+
         
 
 class TextDisplay (Control):
@@ -115,6 +128,8 @@ class TextDisplay (Control):
         pass
 
 class Button (Control):
+    accepts_mouseup = True
+    
     def __init__(self, position, size, text, fill_colour=(0,0,0), text_colour=(255, 255, 255), priority=0):
         super(Button, self).__init__(position, size, priority)
         
@@ -188,7 +203,7 @@ class InvisibleButton (Control):
 # behaviour than the rest of the controls (menus etc)
 class Panel (Control):
     accepts_keydown = False
-    accepts_mouseup = True
+    accepts_mouseup = False
     blit_image = True
     
     def __init__(self, position, size, priority=0):
@@ -217,11 +232,3 @@ class Panel (Control):
     def draw(self, *args, **kwargs):
         raise Exception("{0}.draw() is not implemented".format(self.__class__))
     
-    def handle_mousedrag(self, event):
-        pass
-    
-    def handle_mouseup(self, event, drag=False):
-        raise Exception("{0}.handle_mouseup() is not implemented".format(self.__class__))
-
-    def handle_doubleclick(self, first_click, second_click):
-        return self.handle_mouseup(second_click)

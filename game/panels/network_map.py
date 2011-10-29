@@ -14,6 +14,7 @@ player_colours = {
 
 class NetworkMap (controls.Panel):
     always_redraw = True
+    accepts_mouseup = True
     
     def __init__(self, size, position, network, priority=0):
         super(NetworkMap, self).__init__(position, size, priority)
