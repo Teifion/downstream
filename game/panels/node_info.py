@@ -13,13 +13,18 @@ row_size = 17
 class NodeInfo (controls.Panel):
     always_redraw = True
     
-    def __init__(self, network, size, position, priority=0, fill_colour=(0,0,0), text_colour=(255, 255, 255)):
+    def __init__(self, network, size, position, priority=0, fill_colour=(0,0,0), text_colour=(255, 255, 255), selected_colour=(50, 50, 50)):
         super(NodeInfo, self).__init__(position, size, priority)
         
         self.network = network
         
         self.fill_colour = fill_colour
         self.text_colour = text_colour
+        self.selected_colour = selected_colour
+        
+        self.menu = []
+        
+        self.selected = -1
     
     def draw(self):
         self._image = pygame.Surface(self.rect.size)
@@ -44,6 +49,9 @@ class NodeInfo (controls.Panel):
         
         for i, prog in enumerate(keys):
             ver = the_node.programs[prog]
+            
+            if i == self.selected:
+                self._image.fill(self.selected_colour, pygame.Rect(0, (i+2) * row_height + 5, self.rect.width, row_height))
             
             controls.draw_text(self._image, prog, (5, 5 + row_height*2 + i*row_height), self.text_colour, size=row_size)
             controls.draw_text(self._image, str(float(ver)), (170, 5 + row_height*2 + i*row_height), self.text_colour, size=row_size)
@@ -73,8 +81,10 @@ class NodeInfo (controls.Panel):
         key_list.sort()
         
         # Clicked too far down
-        if row > len(key_list):
+        if row >= len(key_list):
             return
+        
+        self.selected = row
         
         print("Need to show app window for %s" % key_list[row])
             
