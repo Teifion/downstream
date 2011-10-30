@@ -39,7 +39,7 @@ class Software (object):
             the_job = the_app.launch(network, owner, version)
         except Exception as e:
             if matcher.search(e.message):
-                return the_app.launch_builder(network, owner, parent_node, target_node, version), False
+                return the_app.launch_builder(network, owner, parent_node, target_node, app_name, version), False
             raise
         
         return the_job, True

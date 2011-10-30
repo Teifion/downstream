@@ -31,7 +31,7 @@ class Downstream (core.EngineV3):
         self.set_screen('Game')
         
         cs = self.current_screen
-        cs.player = 0
+        cs.player = "player_0"
         
         cs.name = "Downstream"
         cs.load_game("data/dummy.json")

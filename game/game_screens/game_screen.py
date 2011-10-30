@@ -51,7 +51,7 @@ class GameScreen (screen.Screen):
         )
         
         self.tick = 0
-        self.player = 0
+        self.player = ""
     
     def update(self):
         if time.time() < self._next_update:

@@ -30,8 +30,9 @@ class Launcher (controls.Panel):
         self._image = pygame.Surface(self.rect.size)
         self._image.fill(self.fill_colour, pygame.Rect(0, 0, self.rect.width, self.rect.height))
         
-        i = 0
+        i = -1
         for row_text, callback in self.options:
+            i += 1
             controls.draw_text(self._image, str(row_text),
                 (5, 5 + i*row_height), self.text_colour, size=row_size)
         
@@ -48,13 +49,12 @@ class Launcher (controls.Panel):
         
         if relative_pos[0] > self.rect.width - 25:
             if relative_pos[1] < 25:
-                return self.close()
+                self.kill = True
+                return
         
         row = int(math.floor(relative_pos[1] / row_height)) - 1
         
         self.launch(row)
-    
-    def close(self):
         self.kill = True
     
     def launch(self, option_id):

@@ -13,12 +13,19 @@ class Cracker (application.Application):
     def __init__(self, **app_data):
         super(Cracker, self).__init__(app_type="cracker", **app_data)
     
-    def launch_builder(self, network, owner, parent_node, target_node, version):
+    def launch_builder(self, network, owner, parent_node, target_node, app_name, version):
         l = launcher.Launcher((100, 100), (400, 400), priority=9, fill_colour=(20,20,20), text_colour=(255, 255, 255))
         
-        l.options = (
-            ("XYZ", None),
-        )
+        nodes = network.reachable_nodes(owner=owner)
+        
+        for n in nodes:
+            if network.nodes[n].owner == owner:
+                continue
+            
+            def cb_func():
+                network.launch_app(owner, parent_node, target_node, app_name, version, target_password)
+            
+            l.options.append((network.nodes[n].name, cb_func))
         
         return l
     

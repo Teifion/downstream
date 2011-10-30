@@ -16,15 +16,15 @@
                 }
             },
             
-            "1":    {"owner":"neutral", "password":{}, "position":[100, 100], "cpu_power": 1},
-            "2":    {"owner":"neutral", "password":{}, "position":[100, 200], "cpu_power": 1},
-            "3":    {"owner":"neutral", "password":{}, "position":[150, 100], "cpu_power": 1},
-            "4":    {"owner":"neutral", "password":{}, "position":[150, 200], "cpu_power": 1},
+            "1":    {"owner":"neutral", "password":{}, "position":[100, 100], "cpu_power": 1, "name": "CPU 1"},
+            "2":    {"owner":"neutral", "password":{}, "position":[100, 200], "cpu_power": 1, "name": "CPU 2"},
+            "3":    {"owner":"neutral", "password":{}, "position":[150, 100], "cpu_power": 1, "name": "CPU 3"},
+            "4":    {"owner":"neutral", "password":{}, "position":[150, 200], "cpu_power": 1, "name": "CPU 4"},
             
-            "5":    {"owner":"player_1", "password":{}, "position":[200, 150], "cpu_power": 1},
+            "5":    {"owner":"player_1", "password":{}, "position":[200, 150], "cpu_power": 1, "name": "Computer"},
             
-            "6":    {"owner":"neutral", "password":{}, "position":[200, 50], "cpu_power": 1},
-            "7":    {"owner":"neutral", "password":{}, "position":[50, 250], "cpu_power": 1}
+            "6":    {"owner":"neutral", "password":{}, "position":[200, 50], "cpu_power": 1, "name": "CPU 6"},
+            "7":    {"owner":"neutral", "password":{}, "position":[50, 250], "cpu_power": 1, "name": "CPU 7"}
         },
         
         "connections": [
