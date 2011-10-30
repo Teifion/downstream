@@ -1,3 +1,10 @@
+This project has been put on (probably permanent hold) as in theory it was
+going to be very interesting but in practice would have been very boring.
+As this completely defeats the point of a game I canned it but I'm leaving
+the code up as it could be useful to someone else.
+
+---
+
 Downstream will be a multiplayer game centred around hacking. I'm writing it
 to teach myself network programming. Actual design of the game to come at a
 later stage.
