@@ -143,16 +143,25 @@ class Screen (object):
     def draw_controls(self):
         surf = self.engine.display
         
+        to_kill = []
+        
         # We use all of this to draw the controls in order
         # of priority (high priority goes at the top of the screen)
         priorities = set()
         control_sets = {}
         for i, c in self.controls.items():
+            if c.kill:
+                to_kill.append(i)
+                continue
+            
             p = c.draw_priority
             if p not in control_sets: control_sets[p] = []
             
             control_sets[p].append(i)
             priorities.add(c.draw_priority)
+        
+        for k in to_kill:
+            del(self.controls[k])
         
         priorities = list(priorities)
         priorities.sort()

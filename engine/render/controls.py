@@ -48,6 +48,10 @@ class Control (object):
         
         self.draw_priority = priority
         
+        # Allows us to set the control to be killed from
+        # within the control itself
+        self.kill = False
+        
         self.update()
     
     def contains(self, position):
