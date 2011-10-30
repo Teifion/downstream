@@ -31,13 +31,24 @@ class GameScreen (screen.Screen):
             screen = self,
         )
         
-        self.controls["job_list"] = job_list.JobList(
-            size = (300, downstream_game.screen_size[1] - 20),
+        self.controls["player_job_list"] = job_list.JobList(
+            size = (300, downstream_game.screen_size[1]/2-20),
             position = (downstream_game.screen_size[0] - 310, 10),
             fill_colour = (50,50,50),
             text_colour = (255, 255, 255),
             network = self.network,
             screen = self,
+            source = "Player0",
+        )
+        
+        self.controls["node_job_list"] = job_list.JobList(
+            size = (300, downstream_game.screen_size[1]/2-10),
+            position = (downstream_game.screen_size[0] - 310, downstream_game.screen_size[1]/2),
+            fill_colour = (50,50,50),
+            text_colour = (255, 255, 255),
+            network = self.network,
+            screen = self,
+            source = "Node",
         )
         
         self.controls["node_info"] = node_info.NodeInfo(
@@ -59,9 +70,15 @@ class GameScreen (screen.Screen):
         
         self.tick += 1
         
+        for nid, node in self.network.nodes.items():
+            node.run_admin(self.network)
+        
         to_remove = []
         for jid, job in self.network.jobs.items():
-            job.cycle()
+            try:
+                job.cycle()
+            except Exception as e:
+                raise
             
             if job.is_complete:
                 to_remove.append(jid)
@@ -83,8 +100,12 @@ class GameScreen (screen.Screen):
             self.network.players[int(k)] = player.Player(int(k), v)
         
         self.controls['network_map'].network = self.network
-        self.controls['job_list'].network = self.network
+        self.controls['player_job_list'].network = self.network
+        self.controls['node_job_list'].network = self.network
+        
         self.controls['node_info'].network = self.network
         
+        self.controls["player_job_list"].source = self.player
+    
     def handle_mouseup(self, event, drag):
         print(event)

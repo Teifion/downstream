@@ -13,7 +13,8 @@ class User (object):
 
 def make_password(brute_force=1, dictionary=1, rainbow=1):
     return {
-        "id":           "%s.%s" % (random.random(), time.time()),
+        "id":           random.random(),
+        "time":         time.time(),
         "brute_force":  brute_force,
         "dictionary":   dictionary,
         "rainbow":      rainbow,

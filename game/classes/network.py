@@ -27,6 +27,7 @@ class Network (object):
         self.connections    = set()
         
         for node_name, node_data in data['nodes'].items():
+            node_data['node_id'] = int(node_name)
             self.nodes[int(node_name)] = node.Node(node_data)
         
         for n1, n2 in data['connections']:
@@ -63,7 +64,9 @@ class Network (object):
                 self.jobs[jid] = the_job
                 break
         
-        the_node.jobs.append(the_job)
+        the_node.jobs.append(jid)
+        
+        return jid
     
     def launch_launcher(self, the_launcher):
         the_launcher.rect.topleft = pygame.mouse.get_pos()

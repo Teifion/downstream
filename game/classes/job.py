@@ -23,7 +23,11 @@ class Job (object):
         
         self.is_complete = False
     
+    def __str__(self):
+        return '<%s job: owner=%s, node=%s, version=%s>' % (self.full_name, self.owner, self.node, self.version)
+    
     def get_progress(self):
+        if self.max_progress == -1: return -1
         return (self.progress/self.max_progress) * 100
     
     def _cycle(self, cpu_points = 1):
@@ -33,6 +37,10 @@ class Job (object):
         raise Exception("Not implemented")
     
     def cycle(self, cpu_points = 1):
+        # Never completes
+        if self.max_progress == -1:
+            return
+        
         if self.is_complete: return
         
         self._cycle(cpu_points)
@@ -41,6 +49,3 @@ class Job (object):
         if self.progress >= self.max_progress:
             self._complete()
             self.is_complete = True
-
-
-

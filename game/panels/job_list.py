@@ -15,7 +15,7 @@ class JobList (controls.Panel):
     accepts_mouseup = True
     
     def __init__(self, network, size, position, screen, priority=0,
-        fill_colour=(0,0,0), text_colour=(255, 255, 255)):
+        fill_colour=(0,0,0), text_colour=(255, 255, 255), source=""):
         
         super(JobList, self).__init__(position, size, priority)
         
@@ -25,6 +25,7 @@ class JobList (controls.Panel):
         self.text_colour = text_colour
         
         self.screen = screen
+        self.source = source
     
     def draw(self):
         self._image = pygame.Surface(self.rect.size)
@@ -33,10 +34,16 @@ class JobList (controls.Panel):
         if self.network == None:
             return
         
+        if self.source != "Node":
+            self.draw_for_owner()
+        else:
+            self.draw_for_node()
+    
+    def draw_for_owner(self):
         controls.draw_text(self._image, "Job", (5, 5), self.text_colour, size=header_size, bold=True)
         controls.draw_text(self._image, "Node", (70, 5), self.text_colour, size=header_size, bold=True)
         controls.draw_text(self._image, "App", (130, 5), self.text_colour, size=header_size, bold=True)
-        controls.draw_text(self._image, "%", (215, 5), self.text_colour, size=header_size, bold=True)
+        controls.draw_text(self._image, "%", (245, 5), self.text_colour, size=header_size, bold=True)
         
         key_list = list(self.network.jobs.keys())
         key_list.sort()
@@ -44,11 +51,12 @@ class JobList (controls.Panel):
         i = 0
         for job_id in key_list:
             the_job = self.network.jobs[job_id]
+            if the_job.owner != self.screen.player: continue
             i += 1
             
             # Job ID
             controls.draw_text(self._image, str(job_id),
-                (5, 5+i*row_height), self.text_colour, size=row_size)
+                (5, 5+i*row_height+2), self.text_colour, size=row_size-2)
             
             # Node ID
             controls.draw_text(self._image, str(the_job.node),
@@ -59,9 +67,54 @@ class JobList (controls.Panel):
                 (130, 5+i*row_height), self.text_colour, size=row_size)
             
             # Progress
-            controls.draw_text(self._image, "%s%%" % int(the_job.get_progress()),
-                (215, 5+i*row_height), self.text_colour, size=row_size)
-
+            progress = int(the_job.get_progress())
+            if progress == -1:
+                progress_text = ""
+            else:
+                progress_text = "%s%%" % progress
+            
+            controls.draw_text(self._image, progress_text,
+                (245, 5+i*row_height), self.text_colour, size=row_size)
+    
+    def draw_for_node(self):
+        if self.network.selected_node < 0:
+            return
+        
+        controls.draw_text(self._image, "Job", (5, 5), self.text_colour, size=header_size, bold=True)
+        controls.draw_text(self._image, "Owner", (60, 5), self.text_colour, size=header_size-1, bold=True)
+        controls.draw_text(self._image, "App", (130, 5), self.text_colour, size=header_size, bold=True)
+        controls.draw_text(self._image, "%", (245, 5), self.text_colour, size=header_size, bold=True)
+        
+        key_list = list(self.network.nodes[self.network.selected_node].jobs)
+        key_list.sort()
+        
+        i = 0
+        for job_id in key_list:
+            the_job = self.network.jobs[job_id]
+            i += 1
+            
+            # Job ID
+            controls.draw_text(self._image, str(job_id),
+                (5, 5+i*row_height+2), self.text_colour, size=row_size-2)
+            
+            # Node ID
+            controls.draw_text(self._image, str(the_job.owner),
+                (60, 5+i*row_height), self.text_colour, size=row_size)
+            
+            # App name
+            controls.draw_text(self._image, "%s%s" % (the_job.short_name, the_job.version),
+                (130, 5+i*row_height), self.text_colour, size=row_size)
+            
+            # Progress
+            progress = int(the_job.get_progress())
+            if progress == -1:
+                progress_text = ""
+            else:
+                progress_text = "%s%%" % progress
+            
+            controls.draw_text(self._image, progress_text,
+                (245, 5+i*row_height), self.text_colour, size=row_size)
+    
     def handle_mouseup(self, event):
         relative_pos = (
             event.pos[0] - self.rect.left,

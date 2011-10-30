@@ -4,6 +4,12 @@
             "type":         "cracker",
             "short_name":   "crack",
             "full_name":    "crack"
+        },
+        
+        "initech_web_server":   {
+            "type":         "web server",
+            "short_name":   "ini_server",
+            "full_name":    "Initech web server"
         }
     }
 }

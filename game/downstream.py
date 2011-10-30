@@ -39,6 +39,10 @@ class Downstream (core.EngineV3):
         # cs.network.launch_app(owner_id=0, node_id=0, app_name="dict_cracker",
         #     target_password=cs.network.nodes[0].users["root"].password)
         
+        cs._handle_mouseup(pygame.event.Event(6, button=1, pos=(107, 109)))# Select node 1
+        cs._last_mouseup[1] = 0
+        
+        return
         # Fake some clicks
         cs._handle_mouseup(pygame.event.Event(6, button=1, pos=(57, 157)))# Click our computer node
         cs._last_mouseup[1] = 0

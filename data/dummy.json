@@ -7,6 +7,7 @@
         "nodes": {
             "0":    {
                 "name":         "Human",
+                "admin":        "player",
                 "owner":        "player_0",
                 "password":     {"rainbow":-1},
                 "position":     [50, 150],
@@ -16,15 +17,27 @@
                 }
             },
             
-            "1":    {"owner":"neutral", "password":{}, "position":[100, 100], "cpu_power": 1, "name": "CPU 1"},
-            "2":    {"owner":"neutral", "password":{}, "position":[100, 200], "cpu_power": 1, "name": "CPU 2"},
-            "3":    {"owner":"neutral", "password":{}, "position":[150, 100], "cpu_power": 1, "name": "CPU 3"},
-            "4":    {"owner":"neutral", "password":{}, "position":[150, 200], "cpu_power": 1, "name": "CPU 4"},
+            "1":    {
+                "name":         "CPU 1",
+                "admin":        "basic",
+                "owner":        "neutral",
+                "password":     {},
+                "position":     [100, 100],
+                "cpu_power":    1, 
+                
             
-            "5":    {"owner":"player_1", "password":{}, "position":[200, 150], "cpu_power": 1, "name": "Computer"},
+                "services":{
+                    "initech_web_server":    1
+                }
+            },
+            "2":    {"owner":"neutral", "password":{}, "position":[100, 200], "cpu_power": 1, "name": "CPU 2", "admin":"basic"},
+            "3":    {"owner":"neutral", "password":{}, "position":[150, 100], "cpu_power": 1, "name": "CPU 3", "admin":"basic"},
+            "4":    {"owner":"neutral", "password":{}, "position":[150, 200], "cpu_power": 1, "name": "CPU 4", "admin":"basic"},
             
-            "6":    {"owner":"neutral", "password":{}, "position":[200, 50], "cpu_power": 1, "name": "CPU 6"},
-            "7":    {"owner":"neutral", "password":{}, "position":[50, 250], "cpu_power": 1, "name": "CPU 7"}
+            "5":    {"owner":"player_1", "password":{}, "position":[200, 150], "cpu_power": 1, "name": "Computer", "admin":"player"},
+            
+            "6":    {"owner":"neutral", "password":{}, "position":[200, 50], "cpu_power": 1, "name": "CPU 6", "admin":"basic"},
+            "7":    {"owner":"neutral", "password":{}, "position":[50, 250], "cpu_power": 1, "name": "CPU 7", "admin":"basic"}
         },
         
         "connections": [
