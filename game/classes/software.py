@@ -1,10 +1,13 @@
 import json
+import re
 
 from game.apps import cracker
 
 app_lookup = {
     "dict_cracker": cracker.Cracker
 }
+
+matcher = re.compile(r"launch\(\) takes exactly [0-9]* arguments \([0-9]* given\)")
 
 class Software (object):
     """Simply something to allow us to lookup the classes and software"""
@@ -29,8 +32,15 @@ class Software (object):
         
         self.apps[app_name] = app_class(**app_data)
     
-    def launch_app(self, network, owner, app_name, version=1, **kwargs):
+    def launch_app(self, network, owner, parent_node, target_node, app_name, version=1):
         the_app = self.apps[app_name]
-        the_job = the_app.launch(network, owner, version, **kwargs)
         
-        return the_job
+        try:
+            the_job = the_app.launch(network, owner, version)
+        except Exception as e:
+            if matcher.search(e.message):
+                return the_app.launch_builder(network, owner, parent_node, target_node, version), False
+            raise
+        
+        return the_job, True
+

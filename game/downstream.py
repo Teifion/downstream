@@ -1,3 +1,5 @@
+import pygame
+
 from engine.render import core
 
 from game.game_screens import main_menu, game_screen
@@ -29,11 +31,21 @@ class Downstream (core.EngineV3):
         self.set_screen('Game')
         
         cs = self.current_screen
+        cs.player = 0
         
         cs.name = "Downstream"
         cs.load_game("data/dummy.json")
         
-        cs.network.launch_app(owner_id=0, node_id=0, app_name="dict_cracker",
-            target_password=cs.network.nodes[0].users["root"].password)
+        # cs.network.launch_app(owner_id=0, node_id=0, app_name="dict_cracker",
+        #     target_password=cs.network.nodes[0].users["root"].password)
         
-
+        # Fake some clicks
+        cs._handle_mouseup(pygame.event.Event(6, button=1, pos=(57, 157)))# Click our computer node
+        cs._last_mouseup[1] = 0
+        
+        cs._handle_mouseup(pygame.event.Event(6, button=1, pos=(62, 383)))# Select dict cracker
+        cs._last_mouseup[1] = 0
+        
+        pygame.mouse.set_pos(111, 211)
+        cs._handle_mouseup(pygame.event.Event(6, button=1, pos=(111, 211)))# Target a node
+        cs._last_mouseup[1] = 0

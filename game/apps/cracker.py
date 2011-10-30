@@ -1,4 +1,5 @@
 from game.classes import application, job, user
+from game.panels import launcher
 
 base_time = 1000
 
@@ -11,6 +12,15 @@ crack_times = {
 class Cracker (application.Application):
     def __init__(self, **app_data):
         super(Cracker, self).__init__(app_type="cracker", **app_data)
+    
+    def launch_builder(self, network, owner, parent_node, target_node, version):
+        l = launcher.Launcher((100, 100), (400, 400), priority=9, fill_colour=(20,20,20), text_colour=(255, 255, 255))
+        
+        l.options = (
+            ("XYZ", None),
+        )
+        
+        return l
     
     def _cracking_power(self, version):
         return {

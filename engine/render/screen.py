@@ -156,7 +156,6 @@ class Screen (object):
         
         priorities = list(priorities)
         priorities.sort()
-        priorities.reverse()
         
         # Panels, unlike actors we draw all of them unless they
         # tell us not to

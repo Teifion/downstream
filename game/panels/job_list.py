@@ -14,13 +14,17 @@ class JobList (controls.Panel):
     always_redraw = True
     accepts_mouseup = True
     
-    def __init__(self, network, size, position, priority=0, fill_colour=(0,0,0), text_colour=(255, 255, 255)):
+    def __init__(self, network, size, position, screen, priority=0,
+        fill_colour=(0,0,0), text_colour=(255, 255, 255)):
+        
         super(JobList, self).__init__(position, size, priority)
         
         self.network = network
         
         self.fill_colour = fill_colour
         self.text_colour = text_colour
+        
+        self.screen = screen
     
     def draw(self):
         self._image = pygame.Surface(self.rect.size)

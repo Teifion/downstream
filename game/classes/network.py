@@ -1,9 +1,12 @@
 import random
 
+import pygame
+
 from game.classes import node, software
+from game.panels import launcher
 
 class Network (object):
-    def __init__(self, data=None, software=None):
+    def __init__(self, screen, data=None, software=None):
         super(Network, self).__init__()
         
         self.players        = {}
@@ -14,6 +17,7 @@ class Network (object):
         self.software       = software
         
         self.selected_node  = -1
+        self.screen = screen
         
         if data != None:
             self.load_from_data(data)
@@ -34,19 +38,23 @@ class Network (object):
     def load_software(self, file_path):
         self.software = software.Software(file_path)
     
-    def launch_app(self, owner_id, node_id, app_name, **kwargs):
+    def launch_app(self, owner_id, parent_node, target_node, app_name):
         # Node handle
-        the_node = self.nodes[node_id]
+        the_node = self.nodes[parent_node]
         
         # Get version
         version = the_node.programs.get(app_name, -1)
         
         # Make sure we have it
         if version < 0:
-            raise KeyError("Node[%s] has no program by the name of %s" % (node_id, app_name))
+            raise KeyError("Node[%s] has no program by the name of %s" % (parent_node, app_name))
         
-        the_job = self.software.launch_app(self, owner_id, app_name, version, **kwargs)
-        the_job.node = node_id
+        the_job, is_job = self.software.launch_app(self, owner_id, parent_node, target_node, app_name, version)
+        
+        if not is_job:
+            return self.launch_launcher(the_job)
+        
+        the_job.node = parent_node
         
         while True:
             # Keep trying till we get a random number not yet used
@@ -56,3 +64,10 @@ class Network (object):
                 break
         
         the_node.jobs.append(the_job)
+    
+    def launch_launcher(self, the_launcher):
+        the_launcher.rect.topleft = pygame.mouse.get_pos()
+        # the_launcher.rect.topleft = (100, 300)
+        
+        self.screen.controls['launcher'] = the_launcher
+

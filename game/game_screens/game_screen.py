@@ -27,7 +27,8 @@ class GameScreen (screen.Screen):
         self.controls["network_map"] = network_map.NetworkMap(
             size = (300, 300),
             position = (10, 10),
-            network = self.network
+            network = self.network,
+            screen = self,
         )
         
         self.controls["job_list"] = job_list.JobList(
@@ -35,7 +36,8 @@ class GameScreen (screen.Screen):
             position = (downstream_game.screen_size[0] - 310, 10),
             fill_colour = (50,50,50),
             text_colour = (255, 255, 255),
-            network = self.network
+            network = self.network,
+            screen = self,
         )
         
         self.controls["node_info"] = node_info.NodeInfo(
@@ -44,10 +46,12 @@ class GameScreen (screen.Screen):
             fill_colour = (50,50,50),
             selected_colour = (50, 50, 100),
             text_colour = (255, 255, 255),
-            network = self.network
+            network = self.network,
+            screen = self,
         )
         
         self.tick = 0
+        self.player = 0
     
     def update(self):
         if time.time() < self._next_update:
@@ -72,7 +76,7 @@ class GameScreen (screen.Screen):
             data = json.loads(f.read())
         
         # Load network
-        self.network = network.Network(data['network'])
+        self.network = network.Network(self, data['network'])
         self.network.load_software("data/game_data.json")
         
         for k, v in data['players'].items():
@@ -82,3 +86,5 @@ class GameScreen (screen.Screen):
         self.controls['job_list'].network = self.network
         self.controls['node_info'].network = self.network
         
+    def handle_mouseup(self, event, drag):
+        print(event)
