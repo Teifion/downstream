@@ -33,7 +33,7 @@ class NodeInfo (controls.Panel):
         # Set to true when we are waiting for someone to select a node
         self.waiting_for_node = False
         
-        self._last_node_drawn = -2
+        self._last_node_drawn = -2, -1
     
     def draw(self):
         if self.network == None:
@@ -41,7 +41,7 @@ class NodeInfo (controls.Panel):
             self._image.fill(self.fill_colour, pygame.Rect(0, 0, self.rect.width, self.rect.height))
             return
         
-        if self._last_node_drawn == self.network.selected_node:
+        if self._last_node_drawn == (self.network.selected_node, self.selected):
             return
         
         self._last_node_drawn = self.network.selected_node
@@ -102,8 +102,8 @@ class NodeInfo (controls.Panel):
         if row >= len(key_list):
             return
         
-        self.waiting_for_node = True
         self.selected = row
+        self.waiting_for_node = True
     
     def select_node(self, n):
         self.waiting_for_node = False
